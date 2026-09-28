@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    
+    <div id="output"></div>
+
+    <script>
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                myFunction(this);
+            }
+        };
+        xhttp.open("GET", "danhsachnhanvien.xml", true);
+        xhttp.send();
+
+        function myFunction(xml) {
+            var xmlDoc = xml.responseXML;
+            var manvList = xmlDoc.getElementsByTagName("manv");
+            var txt = "???";
+            for (var i = 0; i < manvList.length; i++) {
+                if (manvList[i].childNodes[0].nodeValue.trim() == "002") {
+                    var parentNode = manvList[i].parentNode;
+                    var donvi = parentNode.getElementsByTagName("donvi")[0].childNodes[0].nodeValue;
+                    txt = "Chức vụ NV002 là: " + donvi;
+                    break;
+                }
+            }
+            document.getElementById("output").innerHTML = txt;
+        }
+    </script>
+</body>
+</html>
