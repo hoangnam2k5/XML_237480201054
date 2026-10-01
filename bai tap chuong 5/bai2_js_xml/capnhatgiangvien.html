@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cập nhật giảng viên</title>
+  <style>
+    
+    .container { 
+        width: 90%; 
+        max-width: 800px; 
+        margin: auto; 
+        background: #fff; 
+        padding: 25px; 
+    }
+    h2 { 
+        text-align: center; 
+    }
+    .thongbao { 
+        margin: 20px 0; 
+        padding: 15px; 
+        background: #e7f5e7; 
+        color: green; 
+        border: 1px solid green; 
+        border-radius: 5px; 
+    }
+    
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-top: 20px; 
+    }
+    th, td { 
+        border: 1px solid #333; 
+        padding: 12px; 
+    }
+    button { 
+        margin-top: 20px; 
+        padding: 12px 20px; 
+        background: #0066cc; 
+        color: #fff; 
+        border: none; 
+        border-radius: 5px; 
+        cursor: pointer; 
+        font-size: 16px; 
+    }
+    button:hover { 
+        background: #004c99; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>CẬP NHẬT GIẢNG VIÊN</h2>
+    <div id="tb"></div>
+    <table>
+      <thead><tr><th>Họ tên</th><th>Ngành</th><th>Đơn vị</th></tr></thead>
+      <tbody id="tb-body"></tbody>
+    </table>
+    <button onclick="taiFile()">Tải XML đã cập nhật</button>
+  </div>
+
+  <script>
+    let xmlMoi = "";
+
+    fetch("hosogiangvien.xml")
+      .then(r => r.ok ? r.text() : Promise.reject("Không tìm thấy file!"))
+      .then(str => {
+        const xml = new DOMParser().parseFromString(str, "text/xml");
+        let timThay = false;
+
+        document.getElementById("tb-body").innerHTML = Array.from(xml.querySelectorAll("giangvien")).map(gv => {
+          const ten = gv.querySelector("hoten")?.textContent || "";
+          const nganh = gv.querySelector("nganh")?.textContent || "";
+          const donviNode = gv.querySelector("donvi");
+
+          if (ten === "Phạm Thanh Loan" && donviNode) {
+            donviNode.textContent = "Cơ bản";
+            timThay = true;
+          }
+          return `<tr>
+            <td>${ten}</td>
+            <td>${nganh}</td>
+            <td>${donviNode?.textContent || ""}
+            </td>
+          </tr>`;
+        }).join("");
+
+        const tb = document.getElementById("tb");
+        tb.className = timThay ? "thongbao" : "loi";
+        tb.innerText = timThay ? "Đã cập nhật đơn vị thành 'cơ bản'." : "Không tìm thấy giảng viên.";
+
+        xmlMoi = new XMLSerializer().serializeToString(xml);
+      })
+      
+    function taiFile() {
+      if (!xmlMoi) return alert("Chưa có dữ liệu!");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([xmlMoi], { type: "text/xml" }));
+      a.download = "hosogiangvien_capnhat.xml";
+      a.click();
+    }
+  </script>
+</body>
+</html>

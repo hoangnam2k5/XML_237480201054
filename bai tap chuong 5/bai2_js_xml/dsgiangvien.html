@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách giảng viên</title>
+    <style>
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 12px;
+        }
+
+        th {
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        td:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>DANH SÁCH GIẢNG VIÊN</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>Ngành</th>
+                <th>Đơn vị</th>
+            </tr>
+        </thead>
+        <tbody id="dsGiangVien">
+           
+        </tbody>
+    </table>
+
+    <div id="error" class="error"></div>
+</div>
+
+<script>
+   
+    fetch("hosogiangvien.xml")
+        .then(function(response) {
+        
+            if (!response.ok) {
+                throw new Error("Không tìm thấy file hosogiangvien.xml");
+            }
+            return response.text();
+        })
+        .then(function(data) {
+            // Khởi tạo DOMParser để chuyển chuỗi text thành XML DOM
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(data, "text/xml");
+
+            // Kiểm tra cú pháp file XML
+            if (xml.getElementsByTagName("parsererror").length > 0) {
+                throw new Error("File XML không đúng định dạng!");
+            }
+
+            // Lấy danh sách tất cả các thẻ <giangvien>
+            const giangviens = xml.getElementsByTagName("giangvien");
+            const tableBody = document.getElementById("dsGiangVien");
+
+            // Duyệt từng giảng viên và tạo dòng trong bảng HTML
+            for (let i = 0; i < giangviens.length; i++) {
+                const giangvien = giangviens[i];
+
+                // Trích xuất văn bản từ các thẻ con
+                const hoten = giangvien.getElementsByTagName("hoten")[0]?.textContent || "";
+                const nganh = giangvien.getElementsByTagName("nganh")[0]?.textContent || "";
+                const donvi = giangvien.getElementsByTagName("donvi")[0]?.textContent || "";
+
+                // Tạo dòng <tr> và các ô <td> tương ứng
+                const row = document.createElement("tr");
+
+                const stt = document.createElement("td");
+                stt.textContent = i + 1;
+
+                const tdHoten = document.createElement("td");
+                tdHoten.textContent = hoten;
+
+                const tdNganh = document.createElement("td");
+                tdNganh.textContent = nganh;
+
+                const tdDonvi = document.createElement("td");
+                tdDonvi.textContent = donvi;
+
+                // Ghép các ô vào dòng
+                row.appendChild(stt);
+                row.appendChild(tdHoten);
+                row.appendChild(tdNganh);
+                row.appendChild(tdDonvi);
+
+                // Ghép dòng vào <tbody>
+                tableBody.appendChild(row);
+            }
+        })
+        .catch(function(error) {
+            // Hiển thị thông báo lỗi lên màn hình nếu có sự cố
+            document.getElementById("error").textContent = "Lỗi: " + error.message;
+            console.error(error);
+        });
+</script>
+
+</body>
+</html>

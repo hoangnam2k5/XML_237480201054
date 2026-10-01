@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách môn học - Minh Khai</title>
+
+    <style>
+        body {
+            margin: 30px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>CÁC MÔN HỌC CÓ NHÀ XUẤT BẢN "MINH KHAI"</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên môn học</th>
+                <th>Nhà xuất bản</th>
+                <th>Tác giả</th>
+            </tr>
+        </thead>
+
+        <tbody id="subjectList">
+        </tbody>
+    </table>
+
+    <script>
+        // Đọc file dsmonhoc.xml
+        fetch("dsmonhoc.xml")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Không thể đọc file dsmonhoc.xml");
+                }
+
+                return response.text();
+            })
+
+            // Chuyển dữ liệu XML thành đối tượng DOM
+            .then(data => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                // Lấy tất cả các subject
+                const subjects = xmlDoc.getElementsByTagName("subject");
+
+                const subjectList =
+                    document.getElementById("subjectList");
+
+                let stt = 1;
+
+                // Duyệt qua từng môn học
+                for (let i = 0; i < subjects.length; i++) {
+
+                    const title = subjects[i]
+                        .getElementsByTagName("title")[0]
+                        .textContent.trim();
+
+                    const publisher = subjects[i]
+                        .getElementsByTagName("publisher")[0]
+                        .textContent.trim();
+
+                    const author = subjects[i]
+                        .getElementsByTagName("author")[0]
+                        .textContent.trim();
+
+                    // Chỉ lấy môn học có NXB là Minh Khai
+                    if (publisher === "Minh Khai") {
+
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                            <td>${stt}</td>
+                            <td>${title}</td>
+                            <td>${publisher}</td>
+                            <td>${author}</td>
+                        `;
+
+                        subjectList.appendChild(row);
+
+                        stt++;
+                    }
+                }
+            })
+
+            // Xử lý lỗi
+            .catch(error => {
+                document.getElementById("subjectList").innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            Lỗi: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            });
+    </script>
+
+</body>
+</html>

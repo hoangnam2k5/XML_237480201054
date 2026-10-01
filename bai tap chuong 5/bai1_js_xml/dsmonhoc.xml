@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<subjects>
+    <subject>
+        <title> Lâp trình wed</title>
+        <publisher> Minh Khai</publisher>
+        <author> Hoang Hon</author>
+    </subject>
+    <subject>
+        <title> Phan tich TK He thong</title>
+        <publisher>Giao duc</publisher>
+        <author>Phuong Anh</author>
+    </subject>
+    <subject>
+         <title>Ngon ngu lap trinh</title>
+        <publisher>Minh Khai</publisher>
+        <author>Phuoc Nghia</author>
+    </subject>
+    <subject>
+        <title> Mang may tinh</title>
+        <publisher>DH Can Tho</publisher>
+        <author>Ngoc Loi</author>
+    </subject>
+    <subject>
+         <title>Lap trinh Python</title>
+        <publisher>Giao duc</publisher>
+        <author>Khanh Luan</author>
+    </subject>
+</subjects>
